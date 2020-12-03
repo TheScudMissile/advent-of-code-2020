@@ -5,8 +5,8 @@
 
 (def input
   (->> (io/resource "day-1.txt")
-       (slurp)
-       (str/split-lines)
+       slurp
+       str/split-lines
        (map edn/read-string)))
 
 (def input-set (set input))
