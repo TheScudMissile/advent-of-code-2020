@@ -1,7 +1,7 @@
 (ns advent-of-code-2020.core
-  (:gen-class))
+  (:require [advent-of-code-2020.day-1 :as day1]))
 
-;(defn day-1-solutions
-;  []
-;  (println (day-1/solution-1))
-;  (println (day-1/solution-2)))
+(defn day1-solutions
+  []
+  (println (day1/solution-1))
+  (println (day1/solution-2)))
