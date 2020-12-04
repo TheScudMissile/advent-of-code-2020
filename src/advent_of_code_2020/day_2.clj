@@ -1,12 +1,9 @@
 (ns advent-of-code-2020.day-2
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [advent-of-code-2020.utils :as utils]))
 
-(def input
-  (->> (io/resource "day-2.txt")
-       slurp
-       str/split-lines))
+(def input (utils/input->string-vec "day-2.txt"))
 
 (defn- tokenize-input
   "Split each input element into tuple containing

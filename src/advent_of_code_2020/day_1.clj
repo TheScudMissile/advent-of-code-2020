@@ -1,12 +1,11 @@
 (ns advent-of-code-2020.day-1
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [advent-of-code-2020.utils :as utils]))
 
 (def input
-  (->> (io/resource "day-1.txt")
-       slurp
-       str/split-lines
+  (->> (utils/input->string-vec "day-1.txt")
        (map edn/read-string)))
 
 (def input-set (set input))
