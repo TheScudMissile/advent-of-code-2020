@@ -1,6 +1,7 @@
 (ns advent-of-code-2020.day-4
   (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
 
 (def input (-> (io/resource "day-4.txt")
                 slurp
@@ -8,12 +9,75 @@
 
 (def regex-vec [#"ecl" #"pid" #"eyr" #"hcl" #"byr" #"iyr" #"hgt"])
 
-(defn solution-1
-  []
+(defn- all-fields-present?
+  [str-to-check]
+  (let [results (map #(re-find % str-to-check) regex-vec)]
+    (boolean (every? #(not (nil? %)) results))))
+
+(defn- reduce-input-with-fn
+  [f]
   (reduce (fn [acc curr]
-            (let [results (map #(re-find % curr) regex-vec)]
-              (if (every? #(not (nil? %)) results)
-                (+ acc 1)
-                acc)))
+            (if (f curr)
+              (+ acc 1)
+              acc))
           0
           input))
+
+(defn solution-1
+  []
+  (reduce-input-with-fn all-fields-present?))
+
+(defn- in-range?
+  [val max min]
+  (try
+    (let [num (edn/read-string val)]
+      (and (>= max num) (<= min num)))
+    (catch Exception e
+      false)))
+
+(defn- valid-field?
+  [str]
+  (let [[key val] (str/split str #":")]
+    (case key
+      "ecl"
+      (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} val)
+
+      "pid"
+      (= 9 (count val))
+
+      "eyr"
+      (in-range? val 2030 2020)
+
+      "hcl"
+      (boolean (re-find #"#[0-9a-f]{1,6}" val))
+
+      "byr"
+      (in-range? val 2002 1920)
+
+      "iyr"
+      (in-range? val 2020 2010)
+
+      "hgt"
+      (try
+        (let [unit (re-find #"cm|in" val)
+              num (when unit
+                    (-> (subs val 0 (- (count val) 2))
+                        (edn/read-string)))]
+          (if (= "cm" unit)
+            (and (>= 193 num) (<= 150))
+            (and (>= 76 num) (<= 59))))
+        (catch Exception e
+          false))
+
+      false)))
+
+(defn- all-fields-valid?
+  [str-to-check]
+  (when (all-fields-present? str-to-check)
+    (let [tokenized (str/split str-to-check #"(\n| )")
+          result-coll (map valid-field? tokenized)]
+      (every? true? result-coll))))
+
+(defn solution-2
+  []
+  (reduce-input-with-fn all-fields-valid?))
