@@ -51,10 +51,10 @@
 (defn- valid-passport?
   [val]
   (try
-    (if (= 9 (count val))
-      (-> (edn/read-string val)
-          boolean)
-      false)
+    (when (= 9 (count val))
+      (-> (re-find #"[0-9]{9}" val)
+          count
+          (= 9)))
     (catch Exception e
       false)))
 
@@ -63,7 +63,7 @@
   (letfn [(is-7? [str]
             (= 7 (count str)))]
     (boolean (and (is-7? val)
-                  (is-7? (re-find #"#[0-9a-f]{1,6}" val))))))
+                  (is-7? (re-find #"#[0-9a-f]{6}" val))))))
 
 (defn- valid-field?
   [str]
@@ -100,8 +100,6 @@
   (when (all-fields-present? str-to-check)
     (let [tokenized (str/split str-to-check #"(\n| )")
           result-coll (map valid-field? tokenized)]
-      (println tokenized "resulted in " result-coll "which is " (every? true? result-coll))
-      (println)
       (every? true? result-coll))))
 
 (defn solution-2
