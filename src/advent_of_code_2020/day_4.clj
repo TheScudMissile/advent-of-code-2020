@@ -35,6 +35,36 @@
     (catch Exception e
       false)))
 
+(defn- valid-height?
+  [val]
+  (try
+    (let [unit (re-find #"cm|in" val)
+          num (when unit
+                (-> (subs val 0 (- (count val) 2))
+                    (edn/read-string)))]
+      (if (= "cm" unit)
+        (and (>= 193 num) (<= 150 num))
+        (and (>= 76 num) (<= 59 num))))
+    (catch Exception e
+      false)))
+
+(defn- valid-passport?
+  [val]
+  (try
+    (if (= 9 (count val))
+      (-> (edn/read-string val)
+          boolean)
+      false)
+    (catch Exception e
+      false)))
+
+(defn- valid-hair-color?
+  [val]
+  (letfn [(is-7? [str]
+            (= 7 (count str)))]
+    (boolean (and (is-7? val)
+                  (is-7? (re-find #"#[0-9a-f]{1,6}" val))))))
+
 (defn- valid-field?
   [str]
   (let [[key val] (str/split str #":")]
@@ -43,13 +73,13 @@
       (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} val)
 
       "pid"
-      (= 9 (count val))
+      (valid-passport? val)
 
       "eyr"
       (in-range? val 2030 2020)
 
       "hcl"
-      (boolean (re-find #"#[0-9a-f]{1,6}" val))
+      (valid-hair-color? val)
 
       "byr"
       (in-range? val 2002 1920)
@@ -58,16 +88,10 @@
       (in-range? val 2020 2010)
 
       "hgt"
-      (try
-        (let [unit (re-find #"cm|in" val)
-              num (when unit
-                    (-> (subs val 0 (- (count val) 2))
-                        (edn/read-string)))]
-          (if (= "cm" unit)
-            (and (>= 193 num) (<= 150))
-            (and (>= 76 num) (<= 59))))
-        (catch Exception e
-          false))
+      (valid-height? val)
+
+      "cid"
+      true
 
       false)))
 
@@ -76,6 +100,8 @@
   (when (all-fields-present? str-to-check)
     (let [tokenized (str/split str-to-check #"(\n| )")
           result-coll (map valid-field? tokenized)]
+      (println tokenized "resulted in " result-coll "which is " (every? true? result-coll))
+      (println)
       (every? true? result-coll))))
 
 (defn solution-2
