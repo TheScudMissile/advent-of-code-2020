@@ -2,7 +2,8 @@
   (:require [advent-of-code-2020.day-1 :as day1]
             [advent-of-code-2020.day-2 :as day2]
             [advent-of-code-2020.day-3 :as day3]
-            [advent-of-code-2020.day-4 :as day4]))
+            [advent-of-code-2020.day-4 :as day4]
+            [advent-of-code-2020.day-5 :as day5]))
 
 (defn day1-solutions
   []
@@ -21,4 +22,9 @@
 
 (defn day4-solutions
   []
-  (println (day4/solution-1)))
+  (println (day4/solution-1))
+  (println (day4/solution-2)))
+
+(defn day5-solutions
+  []
+  (println (day5/solution-1)))
