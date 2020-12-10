@@ -8,17 +8,31 @@
 (defn- rule->map
   [rule]
   (let [[parent children] (str/split rule #"s contain ")
-        bag-coll (->> (str/split children #", ")
-                      (map (fn [elem]
-                             (let [num (-> (re-find #"[1-9]" elem)
-                                           edn/read-string)
-                                   bag (-> (subs elem 2)
-                                           (str/replace #"s|\." ""))]
-                               (when num
-                                 {bag num}))))
-                      (apply merge))]
-    {parent bag-coll}))
+        bag-set (->> (str/split children #", ")
+                     (reduce (fn [acc curr]
+                               (let [num (-> (re-find #"[1-9]" curr)
+                                             edn/read-string)
+                                     bag (-> (subs curr 2)
+                                             (str/replace #"bags\.|bags|bag." "bag"))]
+                                 (if num
+                                   (conj acc bag)
+                                   acc)))
+                             nil)
+                     set)]
+    {parent bag-set}))
 
-(defn- build-map
+(def full-map (apply merge (map rule->map input)))
+
+(defn- shiny-in-key-path?
+  [key]
+  (let [children (get full-map key)
+        shiny? (contains? children "shiny gold bag")]
+    (or shiny?
+        (boolean (some shiny-in-key-path? children)))))
+
+(defn- solution-1
   []
-  (map rule->map input))
+  (->> (keys full-map)
+       (map shiny-in-key-path?)
+       (filter true?)
+       count))
