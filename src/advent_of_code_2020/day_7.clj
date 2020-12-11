@@ -4,35 +4,45 @@
             [clojure.edn :as edn]))
 
 (def input (utils/input->string-vec "day-7.txt"))
+(def target-bag "shiny gold bag")
 
 (defn- rule->map
   [rule]
   (let [[parent children] (str/split rule #"s contain ")
-        bag-set (->> (str/split children #", ")
+        children-map (->> (str/split children #", ")
                      (reduce (fn [acc curr]
                                (let [num (-> (re-find #"[1-9]" curr)
                                              edn/read-string)
                                      bag (-> (subs curr 2)
                                              (str/replace #"bags\.|bags|bag." "bag"))]
                                  (if num
-                                   (conj acc bag)
+                                   (conj acc {bag num})
                                    acc)))
-                             nil)
-                     set)]
-    {parent bag-set}))
+                             {}))]
+    {parent children-map}))
 
 (def full-map (apply merge (map rule->map input)))
 
 (defn- shiny-in-key-path?
   [key]
-  (let [children (get full-map key)
-        shiny? (contains? children "shiny gold bag")]
+  (let [children (-> (get full-map key) keys set)
+        shiny? (contains? children target-bag)]
     (or shiny?
         (boolean (some shiny-in-key-path? children)))))
 
-(defn- solution-1
+(defn solution-1
   []
   (->> (keys full-map)
        (map shiny-in-key-path?)
        (filter true?)
        count))
+
+(defn- recursively-count
+  [children total]
+  (let [keys (keys children)
+        vals (vals children)]))
+
+(defn solution-2
+  []
+  (-> (get full-map target-bag)
+      (recursively-count 0)))
