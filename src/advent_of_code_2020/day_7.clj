@@ -37,12 +37,19 @@
        (filter true?)
        count))
 
-(defn- recursively-count
-  [children total]
-  (let [keys (keys children)
-        vals (vals children)]))
+(defn- count-bags
+  ([]
+   (count-bags target-bag))
+  ([key]
+   (let [children (get full-map key)]
+     (if (seq children)
+       (->> (map (fn [[key val]]
+                   (* val (count-bags key)))
+                 children)
+            (cons 1)
+            (apply +))
+       1))))
 
 (defn solution-2
   []
-  (-> (get full-map target-bag)
-      (recursively-count 0)))
+  (- (count-bags) 1))
