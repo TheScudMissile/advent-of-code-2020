@@ -21,7 +21,7 @@
        boolean))
 
 (defn- find-invalid-val
-  [input]
+  []
   (loop [working-coll (subvec input 0 preamble-len)
          curr-val-idx preamble-len]
     (let [curr-val (nth input curr-val-idx)]
@@ -29,3 +29,28 @@
         (recur (conj (subvec working-coll 1) curr-val)
                (inc curr-val-idx))
         curr-val))))
+
+(defn solution-1
+  []
+  (find-invalid-val))
+
+(defn solution-2
+  []
+  (let [invalid-val (find-invalid-val)]
+    (loop [contig-start 0
+           idx 0
+           working-vec []]
+      (let [curr-val (nth input idx)
+            updated-working-vec (conj working-vec curr-val)
+            working-sum (apply + updated-working-vec)]
+        (cond
+          (= invalid-val working-sum)
+          (+ (apply max updated-working-vec)
+             (apply min updated-working-vec))
+
+          (< invalid-val working-sum)
+          (let [new-contig-start (inc contig-start)]
+            (recur new-contig-start new-contig-start []))
+
+          :else
+          (recur contig-start (inc idx) updated-working-vec))))))
