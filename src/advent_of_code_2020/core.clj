@@ -5,7 +5,8 @@
             [advent-of-code-2020.day-4 :as day4]
             [advent-of-code-2020.day-5 :as day5]
             [advent-of-code-2020.day-6 :as day6]
-            [advent-of-code-2020.day-7 :as day7]))
+            [advent-of-code-2020.day-7 :as day7]
+            [advent-of-code-2020.day-8 :as day8]))
 
 (defn day1-solutions
   []
@@ -41,3 +42,8 @@
   []
   (println (day7/solution-1))
   (println (day7/solution-2)))
+
+(defn day8-solutions
+  []
+  (println (day8/solution-1))
+  (println (day8/solution-2)))
